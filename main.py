@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 import time
 
 
-from prophet_script import read_process, evaluate, forecast
+from prophet_script2 import read_process, evaluate, forecast
 from new_nbeats import read_and_process_nbeats, make_future_forecast, make_forecast_dates_daily, make_forecast_dates_weekly, NBeatsBlock, plot_time_series, WINDOW_SIZE
 
 
