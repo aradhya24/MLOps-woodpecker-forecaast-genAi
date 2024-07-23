@@ -66,9 +66,9 @@ class MultiApp:
         if selected == "Generate Forecasts":
             main.app()
         if selected == "Chat with Image":
-            image_bot.app()
+            image_bot2.app()
         if selected == "Chat with Data":
-            data_bot.app()
+            data_bot2.app()
           
              
     run()      
