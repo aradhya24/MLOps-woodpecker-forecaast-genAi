@@ -25,8 +25,8 @@ st.set_page_config(
 )
 
 import main
-import image_bot2
-import data_bot2
+import image_bot
+import data_bot
 
 
 class MultiApp:
@@ -66,9 +66,9 @@ class MultiApp:
         if selected == "Generate Forecasts":
             main.app()
         if selected == "Chat with Image":
-            image_bot2.app()
+            image_bot.app()
         if selected == "Chat with Data":
-            data_bot2.app()
+            data_bot.app()
           
              
     run()      
