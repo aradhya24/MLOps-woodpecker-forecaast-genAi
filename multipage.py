@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from prophet import Prophet
 from prophet.plot import add_changepoints_to_plot
 import holidays
 from datetime import date, datetime, timedelta
