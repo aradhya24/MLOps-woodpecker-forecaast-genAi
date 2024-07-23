@@ -43,7 +43,7 @@ def generate_prophet_files(uploaded_file, end_date):
     return csv, img_bytes
 
 def generate_nbeats_files(uploaded_file, end_date):
-    nbeats_model = tf.keras.models.load_model("C:/Users/Siddharth/Desktop/woodpeckers/nbeats.keras", custom_objects={'NBeatsBlock': NBeatsBlock})
+    nbeats_model = tf.keras.models.load_model(":/Users/Manoday/Downloads/multiPage/nbeats.keras", custom_objects={'NBeatsBlock': NBeatsBlock})
     df = pd.read_csv(uploaded_file, parse_dates=["Date"])
 #     df["Date"] = pd.to_datetime(df["Date"])
     _, b = read_and_process_nbeats(df, WINDOW_SIZE)
