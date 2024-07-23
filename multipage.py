@@ -26,8 +26,8 @@ st.set_page_config(
 )
 
 import main
-import image_bot
-import data_bot
+import image_bot2
+import data_bot2
 
 
 class MultiApp:
