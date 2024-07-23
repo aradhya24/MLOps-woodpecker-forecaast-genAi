@@ -7,13 +7,14 @@ from prophet.plot import add_changepoints_to_plot
 from datetime import datetime
 import tensorflow as tf
 from io import BytesIO
+from datetime import date, datetime, timedelta
 import os
 from dotenv import load_dotenv
 import time
 
 
-from prophet_script2 import read_process, evaluate, forecast
-from nbeats2 import read_and_process_nbeats, make_forecast_dates, make_future_forecast, NBeatsBlock, plot_time_series, WINDOW_SIZE
+from prophet_script import read_process, evaluate, forecast
+from new_nbeats import read_and_process_nbeats, make_future_forecast, make_forecast_dates_daily, make_forecast_dates_weekly, NBeatsBlock, plot_time_series, WINDOW_SIZE
 
 
 
@@ -44,10 +45,26 @@ def generate_prophet_files(uploaded_file, end_date):
 def generate_nbeats_files(uploaded_file, end_date):
     nbeats_model = tf.keras.models.load_model("C:/Users/Siddharth/Desktop/woodpeckers/nbeats.keras", custom_objects={'NBeatsBlock': NBeatsBlock})
     df = pd.read_csv(uploaded_file, parse_dates=["Date"])
-    df['Date'] = df['Date'].dt.strftime("%m/%d/%Y")
-    a, b = read_and_process_nbeats(df)
-    x, y = make_forecast_dates(df, end_date)
-    preds = make_future_forecast(b, nbeats_model, y, WINDOW_SIZE)
+#     df["Date"] = pd.to_datetime(df["Date"])
+    _, b = read_and_process_nbeats(df, WINDOW_SIZE)
+    
+    d_1 = df["Date"].iloc[0]
+    d_2 = df["Date"].iloc[1]
+
+    if isinstance(end_date, date):
+        end_date = pd.Timestamp(end_date)
+
+    diff_dates = (d_2 - d_1).days
+    
+    
+    if diff_dates == 1:
+        x, y = make_forecast_dates_daily(df, end_date)
+        preds = make_future_forecast(b, nbeats_model, y, WINDOW_SIZE)
+
+    if diff_dates == 7:
+        x, y = make_forecast_dates_weekly(df, end_date)
+        preds = make_future_forecast(b, nbeats_model, y, WINDOW_SIZE)
+
     forecast_df = pd.DataFrame()
     forecast_df["Date"] = x
     forecast_df["Predictions"] = preds
@@ -60,9 +77,58 @@ def generate_nbeats_files(uploaded_file, end_date):
 # Main application function
 def app():
     st.title("Generate Forecasts")
-    st.header("File Upload")
+    st.markdown(
+        """
+        <style>
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            font-size: 20px;
+        }
 
-    uploaded_file = st.file_uploader("Upload a File", type="csv")
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #f9f9f9;
+            color: #000;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            border-left: 6px solid #2196F3;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; /* Position above the button */
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltip .emoji {
+            font-size: 16px; /* Adjust the size as needed */
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Add a small question mark button with tooltip
+    st.markdown(
+        """
+         <div class="tooltip"><span class="emoji">💡</span>
+            <span class="tooltiptext">The CSV file must contain a <b>Date</b> and a <b>Sales</b> column.</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    uploaded_file = st.file_uploader("", type="csv")
     end_date = st.date_input("Enter Last Date to be Forecasted", datetime(2019, 7, 6))
 
     model_selection = st.selectbox("Select Model to generate Forecasts", ["Prophet", "N-Beats"], index=None, placeholder="Models..")
